@@ -1,0 +1,5 @@
+[project]
+project_id = "zhomqccxumwmabuzmpuu"
+
+[functions.structure-text]
+verify_jwt = true
