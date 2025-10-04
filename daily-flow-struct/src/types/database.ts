@@ -12,6 +12,7 @@ export interface Deliverable {
   id: string;
   project_id: string;
   date: string;
+  title?: string; // optional short title for display
   structured_text: string;
   raw_text: string;
   tag: string | null;

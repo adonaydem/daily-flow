@@ -21,12 +21,19 @@ const DraggableProject = ({ project, onProjectSelect }: { project: Project; onPr
   return (
     <div
       ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      className={`group flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-accent/50 cursor-move transition-all ${
+      className={`group flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-all ${
         isDragging ? "opacity-50 scale-95" : ""
       }`}
     >
+      <div
+        className="h-6 w-3 flex flex-col justify-between mr-1 cursor-grab active:cursor-grabbing opacity-40 hover:opacity-80"
+        {...listeners}
+        {...attributes}
+      >
+        <span className="block h-[2px] rounded bg-current" />
+        <span className="block h-[2px] rounded bg-current" />
+        <span className="block h-[2px] rounded bg-current" />
+      </div>
       <div
         className="w-3 h-3 rounded-full flex-shrink-0 shadow-sm"
         style={{ backgroundColor: project.color }}
@@ -60,7 +67,7 @@ export const ProjectsSidebar = ({
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   return (
-    <div className="w-80 border-r border-border bg-card flex flex-col h-full">
+  <div className="w-60 border-r border-border bg-card flex flex-col h-full">
       <div className="p-4 border-b border-border">
         <h2 className="text-xl font-bold mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
           Projects

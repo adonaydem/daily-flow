@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { Project } from "@/types/database";
+import { Project, Deliverable } from "@/types/database";
+// Replaced legacy browser STT with OpenAI Whisper
+import { useWhisper } from "@/hooks/useWhisper";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import { structureText } from "@/lib/ai";
 import { toast } from "sonner";
 
 interface DeliverableModalProps {
@@ -21,6 +24,8 @@ interface DeliverableModalProps {
     tag: string | null;
     color_override: string | null;
   };
+  deliverable?: Deliverable;
+  onComplete?: () => void;
 }
 
 export const DeliverableModal = ({
@@ -30,27 +35,28 @@ export const DeliverableModal = ({
   date,
   onDeliverableCreated,
   existingDeliverable,
+  deliverable,
+  onComplete,
 }: DeliverableModalProps) => {
+  const [title, setTitle] = useState("");
   const [deliverables, setDeliverables] = useState(existingDeliverable?.raw_text || "");
   const [tag, setTag] = useState(existingDeliverable?.tag || "");
   const [colorOverride, setColorOverride] = useState(existingDeliverable?.color_override || "");
   const [loading, setLoading] = useState(false);
 
+  const { start, stop, recording, uploading, result, reset } = useWhisper({ autoStopMs: 90000 });
+  useEffect(() => {
+    if (result.transcript) {
+      setDeliverables(prev => prev ? prev + "\n" + result.transcript : result.transcript);
+    }
+  }, [result.transcript]);
+
   const handleSave = async () => {
     setLoading(true);
 
     try {
-      // Call edge function to structure text
-      const { data: structureData, error: structureError } = await supabase.functions.invoke(
-        "structure-text",
-        {
-          body: { text: deliverables },
-        }
-      );
-
-      if (structureError) throw structureError;
-
-      const structuredText = structureData.structuredText;
+      // Local OpenAI formatting
+      const structuredText = await structureText(deliverables);
 
       if (existingDeliverable) {
         // Update existing deliverable
@@ -71,6 +77,7 @@ export const DeliverableModal = ({
         const { error } = await supabase.from("deliverables").insert({
           project_id: project.id,
           date: format(date, "yyyy-MM-dd"),
+          title: title || null,
           raw_text: deliverables,
           structured_text: structuredText,
           tag: tag || null,
@@ -81,6 +88,7 @@ export const DeliverableModal = ({
         toast.success("Deliverable created!");
       }
 
+      setTitle("");
       setDeliverables("");
       setTag("");
       setColorOverride("");
@@ -116,18 +124,36 @@ export const DeliverableModal = ({
 
         <div className="space-y-4">
           <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input id="title" placeholder="Short title" value={title} onChange={(e)=>setTitle(e.target.value)} />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="deliverables">Deliverables</Label>
-            <Textarea
-              id="deliverables"
-              placeholder="Enter your deliverables here... (will be structured by AI)"
-              value={deliverables}
-              onChange={(e) => setDeliverables(e.target.value)}
-              rows={8}
-              className="resize-none"
-            />
-            <p className="text-xs text-muted-foreground">
-              Your text will be automatically structured into bullet points by AI
-            </p>
+            <div className="relative">
+              <Textarea
+                id="deliverables"
+                placeholder="Enter your deliverables here... (will be structured by AI)"
+                value={deliverables}
+                onChange={(e) => setDeliverables(e.target.value)}
+                rows={10}
+                className="resize-none pr-12"
+              />
+              <button
+                type="button"
+                onClick={recording ? stop : start}
+                className={`absolute top-2 right-2 h-9 w-9 rounded-full flex items-center justify-center text-xs font-medium shadow-sm transition
+                  ${recording ? 'bg-destructive text-destructive-foreground animate-pulse' : 'bg-secondary hover:bg-secondary/80'}`}
+                aria-label={recording ? 'Stop recording' : 'Start recording'}
+                disabled={uploading}
+              >
+                {recording ? '◼' : (uploading ? '…' : '🎤')}
+              </button>
+            </div>
+            <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+              <span>{recording ? 'Recording…' : uploading ? 'Transcribing…' : 'Click mic to dictate (Whisper)'}</span>
+              {result.transcript && <button type="button" onClick={reset} className="underline hover:text-foreground">Clear transcript</button>}
+            </div>
+            <p className="text-xs text-muted-foreground">Your text will be automatically structured into bullet points by AI</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -168,6 +194,8 @@ export const DeliverableModal = ({
               {loading ? "Saving..." : existingDeliverable ? "Update" : "Save"}
             </Button>
           </div>
+
+          {/* Legacy deliverable detail section removed (fields not present in current schema). */}
         </div>
       </DialogContent>
     </Dialog>

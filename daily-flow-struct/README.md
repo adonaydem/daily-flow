@@ -71,3 +71,32 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Supabase Edge Function: openai-functions
+
+This project includes a Supabase Edge Function used by the app for AI-related actions (structure text, summarize project, and audio transcription).
+
+Location: `supabase/functions/openai-functions/index.ts`
+
+Required secret:
+
+- `OPENAI_API_KEY` (set in Supabase → Project Settings → Functions → Secrets)
+
+Local development (optional):
+
+```powershell
+# From the workspace root
+supabase start
+
+# Serve the function locally and load env vars
+supabase functions serve openai-functions --no-verify-jwt
+```
+
+Deploy the function:
+
+```powershell
+supabase functions deploy openai-functions
+```
+
+Client usage is wired via `src/lib/ai.ts` using `supabase.functions.invoke('openai-functions')`. No extra CORS setup is needed on the client.
+

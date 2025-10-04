@@ -56,41 +56,38 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 240 10% 8%;
-    --foreground: 240 5% 96%;
+    /* Higher contrast, subtle glow dark theme */
+    --background: 220 35% 10%;
+    --foreground: 220 18% 95%;
 
-    --card: 240 8% 12%;
-    --card-foreground: 240 5% 96%;
+    --card: 220 32% 13%;
+    --card-foreground: 220 18% 94%;
 
-    --popover: 240 8% 12%;
-    --popover-foreground: 240 5% 96%;
+    --popover: 220 32% 14%;
+    --popover-foreground: 220 18% 94%;
 
-    --primary: 250 80% 60%;
+    --primary: 200 90% 60%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 240 5% 16%;
-    --secondary-foreground: 240 5% 96%;
-
-    --muted: 240 5% 16%;
-    --muted-foreground: 240 4% 64%;
-
-    --accent: 180 80% 50%;
+    --secondary: 220 28% 22%;
+    --secondary-foreground: 220 16% 88%;
+    --muted: 220 25% 24%;
+    --muted-foreground: 220 14% 68%;
+    --accent: 190 85% 55%;
     --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62% 50%;
+    --destructive: 0 70% 54%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 5% 20%;
-    --input: 240 5% 20%;
-    --ring: 250 80% 60%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 220 28% 30%;
+    --input: 220 28% 30%;
+    --ring: 200 90% 60%;
+    --sidebar-background: 220 35% 12%;
+    --sidebar-foreground: 220 18% 92%;
+    --sidebar-primary: 200 90% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 220 30% 26%;
+    --sidebar-accent-foreground: 220 18% 92%;
+    --sidebar-border: 220 28% 30%;
+    --sidebar-ring: 200 90% 60%;
   }
 }
 
@@ -100,6 +97,7 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    background-image: radial-gradient(circle at 25% 15%, hsl(var(--primary)/0.12), transparent 60%), radial-gradient(circle at 85% 65%, hsl(var(--accent)/0.10), transparent 70%);
   }
 }

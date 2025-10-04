@@ -7,6 +7,8 @@ import { format } from "date-fns";
 import { ScrollArea } from "./ui/scroll-area";
 import { Badge } from "./ui/badge";
 import { toast } from "sonner";
+import { summarizeProject } from "@/lib/ai";
+import ReactMarkdown from "react-markdown";
 
 interface ProjectHistoryViewProps {
   project: Project;
@@ -17,6 +19,8 @@ export const ProjectHistoryView = ({ project, onClose }: ProjectHistoryViewProps
   const [deliverables, setDeliverables] = useState<Deliverable[]>([]);
   const [reports, setReports] = useState<Record<string, Report[]>>({});
   const [loading, setLoading] = useState(true);
+  const [catchingUp, setCatchingUp] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProjectHistory();
@@ -85,6 +89,37 @@ export const ProjectHistoryView = ({ project, onClose }: ProjectHistoryViewProps
             )}
           </div>
         </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button size="sm" variant="secondary" disabled={catchingUp || loading || deliverables.length===0} onClick={async () => {
+            setCatchingUp(true);
+            setSummary(null);
+            try {
+              // Prepare tasks JSON for summarize-project function
+              const recent = [...deliverables].slice(0,10);
+              const tasks = recent.map(d => {
+                const deliverableBody = (d.structured_text || d.raw_text || '').split(/\s+/).slice(0,500).join(' ');
+                const reps = (reports[d.id]||[]).slice(0,3);
+                const reportsConcat = reps.map(r => (r.structured_text || r.raw_text || '').split(/\s+/).slice(0,180).join(' ')).join('\n---\n');
+                return {
+                  task_title: d.title || d.structured_text?.split('\n')[0]?.slice(0,120) || 'Untitled',
+                  deliverables: deliverableBody,
+                  reports: reportsConcat
+                };
+              });
+              const summaryText = await summarizeProject(project.name, tasks);
+              setSummary(summaryText);
+            } catch (e) {
+              console.error('Summarize failed, using fallback:', e);
+              toast.error('Failed to summarize (fallback used)');
+              // Fallback: simple synthetic list
+              const recent = [...deliverables].slice(0,10);
+              const synthetic = recent.map(d => `- ${d.date}: ${(d.structured_text||d.raw_text||'').split('\n')[0].slice(0,120)}`).join('\n');
+              setSummary(`### Catch Me Up (Fallback)\n\n${synthetic}`);
+            } finally {
+              setCatchingUp(false);
+            }
+          }}>{catchingUp ? 'Summarizing…' : 'Catch Me Up'}</Button>
+        </div>
       </div>
 
       <ScrollArea className="flex-1 p-6">
@@ -99,6 +134,11 @@ export const ProjectHistoryView = ({ project, onClose }: ProjectHistoryViewProps
           </div>
         ) : (
           <div className="space-y-6">
+            {summary && (
+              <div className="p-4 rounded-lg border border-border bg-muted/30 prose prose-sm dark:prose-invert">
+                <ReactMarkdown>{summary}</ReactMarkdown>
+              </div>
+            )}
             {deliverables.map((deliverable) => (
               <div
                 key={deliverable.id}
@@ -124,8 +164,8 @@ export const ProjectHistoryView = ({ project, onClose }: ProjectHistoryViewProps
 
                 <div className="mb-3">
                   <h4 className="text-sm font-semibold mb-2">Deliverables:</h4>
-                  <div className="text-sm whitespace-pre-wrap text-muted-foreground">
-                    {deliverable.structured_text}
+                  <div className="prose prose-xs dark:prose-invert max-w-none text-muted-foreground">
+                    <ReactMarkdown>{deliverable.structured_text || deliverable.raw_text || ''}</ReactMarkdown>
                   </div>
                 </div>
 
@@ -141,8 +181,10 @@ export const ProjectHistoryView = ({ project, onClose }: ProjectHistoryViewProps
                           <div className="text-xs text-muted-foreground mb-1">
                             {format(new Date(report.created_at), "MMM d, yyyy 'at' h:mm a")}
                           </div>
-                          <div className="text-sm whitespace-pre-wrap">
-                            {report.structured_text}
+                          <div className="text-sm max-h-40 overflow-auto pr-1">
+                            <div className="prose prose-xs dark:prose-invert max-w-none">
+                              <ReactMarkdown>{report.structured_text || report.raw_text || ''}</ReactMarkdown>
+                            </div>
                           </div>
                         </div>
                       ))}
