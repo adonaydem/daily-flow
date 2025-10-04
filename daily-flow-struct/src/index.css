@@ -101,3 +101,11 @@ All colors MUST be HSL.
     background-image: radial-gradient(circle at 25% 15%, hsl(var(--primary)/0.12), transparent 60%), radial-gradient(circle at 85% 65%, hsl(var(--accent)/0.10), transparent 70%);
   }
 }
+
+/* Ensure markdown lists/headings look right */
+@layer components {
+  .prose ul { list-style: disc; padding-left: 1.25rem; }
+  .prose ol { list-style: decimal; padding-left: 1.25rem; }
+  .prose li { margin: 0.25rem 0; }
+  .prose h1, .prose h2, .prose h3, .prose h4 { margin: 0.5rem 0; }
+}

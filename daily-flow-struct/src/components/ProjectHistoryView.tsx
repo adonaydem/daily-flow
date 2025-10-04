@@ -9,6 +9,7 @@ import { Badge } from "./ui/badge";
 import { toast } from "sonner";
 import { summarizeProject } from "@/lib/ai";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ProjectHistoryViewProps {
   project: Project;
@@ -136,7 +137,7 @@ export const ProjectHistoryView = ({ project, onClose }: ProjectHistoryViewProps
           <div className="space-y-6">
             {summary && (
               <div className="p-4 rounded-lg border border-border bg-muted/30 prose prose-sm dark:prose-invert">
-                <ReactMarkdown>{summary}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
               </div>
             )}
             {deliverables.map((deliverable) => (
@@ -165,7 +166,7 @@ export const ProjectHistoryView = ({ project, onClose }: ProjectHistoryViewProps
                 <div className="mb-3">
                   <h4 className="text-sm font-semibold mb-2">Deliverables:</h4>
                   <div className="prose prose-xs dark:prose-invert max-w-none text-muted-foreground">
-                    <ReactMarkdown>{deliverable.structured_text || deliverable.raw_text || ''}</ReactMarkdown>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{deliverable.structured_text || deliverable.raw_text || ''}</ReactMarkdown>
                   </div>
                 </div>
 
@@ -183,7 +184,7 @@ export const ProjectHistoryView = ({ project, onClose }: ProjectHistoryViewProps
                           </div>
                           <div className="text-sm max-h-40 overflow-auto pr-1">
                             <div className="prose prose-xs dark:prose-invert max-w-none">
-                              <ReactMarkdown>{report.structured_text || report.raw_text || ''}</ReactMarkdown>
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{report.structured_text || report.raw_text || ''}</ReactMarkdown>
                             </div>
                           </div>
                         </div>

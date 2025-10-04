@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AddReportDialog } from "./AddReportDialog";
 import { DeliverableModal } from "./DeliverableModal";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface DeliverableItemProps {
   deliverable: Deliverable;
@@ -99,8 +101,10 @@ export const DeliverableItem = ({ deliverable, onUpdated }: DeliverableItemProps
           </div>
 
           {isExpanded && (
-            <div className="mt-2 text-xs text-muted-foreground whitespace-pre-wrap">
-              {deliverable.structured_text}
+            <div className="mt-2 prose prose-xs dark:prose-invert max-w-none text-muted-foreground">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {deliverable.structured_text || deliverable.raw_text || ""}
+              </ReactMarkdown>
             </div>
           )}
         </div>

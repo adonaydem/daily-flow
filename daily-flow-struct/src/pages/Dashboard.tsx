@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useWhisper } from "@/hooks/useWhisper";
 import { structureText } from "@/lib/ai";
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -251,7 +252,9 @@ const Dashboard = () => {
                   </div>
                   {viewDeliverable.structured_text && (
                     <div className="prose dark:prose-invert max-w-none">
-                      <ReactMarkdown>{viewDeliverable.structured_text}</ReactMarkdown>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {viewDeliverable.structured_text}
+                      </ReactMarkdown>
                     </div>
                   )}
                   {!viewDeliverable.structured_text && viewDeliverable.raw_text && (
@@ -264,7 +267,9 @@ const Dashboard = () => {
                         {deliverableReports.map(r => (
                           <li key={r.id} className="p-3 rounded-md border bg-background/60 hover:bg-background/80 transition flex flex-col gap-1">
                             <div className="text-xs font-semibold truncate">{r.structured_text.split('\n')[0].slice(0,64)}</div>
-                            <div className="text-[11px] whitespace-pre-wrap text-muted-foreground max-h-28 overflow-auto pr-1 custom-scroll-thin">{r.structured_text || r.raw_text}</div>
+                            <div className="text-[11px] text-muted-foreground max-h-28 overflow-auto pr-1 custom-scroll-thin prose prose-xs dark:prose-invert max-w-none">
+                              <ReactMarkdown>{r.structured_text || r.raw_text || ''}</ReactMarkdown>
+                            </div>
                             <div className="mt-auto pt-1 text-[10px] opacity-60">{new Date(r.created_at).toLocaleString()}</div>
                           </li>
                         ))}
