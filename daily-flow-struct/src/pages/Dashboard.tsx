@@ -176,7 +176,7 @@ const Dashboard = () => {
         <div className="flex-1 flex flex-col overflow-hidden">
           <header className="h-16 border-b border-border bg-card px-6 flex items-center justify-between flex-shrink-0">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Peace
+              Peacable
             </h1>
             <div className="flex items-center gap-2">
               <Button
