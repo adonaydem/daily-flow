@@ -77,7 +77,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6">
+  <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-primary/5 p-6">
       <div className="max-w-2xl mx-auto">
         <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
