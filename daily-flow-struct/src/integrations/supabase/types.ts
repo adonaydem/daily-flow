@@ -21,6 +21,7 @@ export type Database = {
           date: string
           id: string
           is_done: boolean
+          notes: string | null
           project_id: string
           raw_text: string
           structured_text: string
@@ -33,6 +34,7 @@ export type Database = {
           date: string
           id?: string
           is_done?: boolean
+          notes?: string | null
           project_id: string
           raw_text: string
           structured_text: string
@@ -45,6 +47,7 @@ export type Database = {
           date?: string
           id?: string
           is_done?: boolean
+          notes?: string | null
           project_id?: string
           raw_text?: string
           structured_text?: string

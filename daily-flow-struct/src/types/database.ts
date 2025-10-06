@@ -12,9 +12,10 @@ export interface Deliverable {
   id: string;
   project_id: string;
   date: string;
-  title?: string; // optional short title for display
+  title?: string | null; // optional short title for display
   structured_text: string;
   raw_text: string;
+  notes?: string | null;
   tag: string | null;
   color_override: string | null;
   is_done: boolean;

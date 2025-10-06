@@ -127,6 +127,9 @@ export const DeliverableItem = ({ deliverable, onUpdated }: DeliverableItemProps
           existingDeliverable={{
             id: deliverable.id,
             raw_text: deliverable.raw_text,
+            structured_text: deliverable.structured_text,
+            title: deliverable.title ?? null,
+            notes: deliverable.notes ?? null,
             tag: deliverable.tag,
             color_override: deliverable.color_override,
           }}

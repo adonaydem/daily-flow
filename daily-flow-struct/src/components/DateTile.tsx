@@ -8,9 +8,10 @@ interface DateTileProps {
   deliverables: Deliverable[];
   onDeliverableUpdated: () => void;
   onDeliverableClick: (deliverable: Deliverable) => void;
+  onMobileAdd: (date: Date) => void;
 }
 
-export const DateTile = ({ date, deliverables, onDeliverableUpdated, onDeliverableClick }: DateTileProps) => {
+export const DateTile = ({ date, deliverables, onDeliverableUpdated, onDeliverableClick, onMobileAdd }: DateTileProps) => {
   const dateStr = format(date, "yyyy-MM-dd");
   const today = isToday(date);
   const isPast = date < new Date(new Date().setHours(0,0,0,0));
@@ -19,7 +20,7 @@ export const DateTile = ({ date, deliverables, onDeliverableUpdated, onDeliverab
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[200px] p-4 rounded-md border transition-all select-none
+      className={`min-h-[180px] md:min-h-[200px] p-3 md:p-4 rounded-md border transition-all select-none
         ${isOver && !isPast ? "border-primary bg-primary/5" : "border-border bg-card"}
         ${today ? "ring-2 ring-primary/20" : ""}
         ${isPast ? "opacity-60" : ""}`}
@@ -33,6 +34,15 @@ export const DateTile = ({ date, deliverables, onDeliverableUpdated, onDeliverab
             {format(date, "d")}
           </div>
         </div>
+        {!isPast && (
+          <button
+            className="md:hidden text-xs px-2 py-1 rounded border bg-background hover:bg-accent/40"
+            onClick={() => onMobileAdd(date)}
+            aria-label="Add deliverable"
+          >
+            + Add
+          </button>
+        )}
       </div>
 
       <div className="space-y-2">

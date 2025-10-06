@@ -8,6 +8,7 @@ interface DailyBoardProps {
   onDeliverableCreated: () => void; // kept for future extension (modal now in parent)
   onDeliverableUpdated: () => void;
   onDeliverableClick: (d: Deliverable) => void;
+  onMobileAdd: (date: Date) => void;
 }
 
 export const DailyBoard = ({
@@ -15,6 +16,7 @@ export const DailyBoard = ({
   onDeliverableCreated, // eslint-disable-line @typescript-eslint/no-unused-vars
   onDeliverableUpdated,
   onDeliverableClick,
+  onMobileAdd,
 }: DailyBoardProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -59,7 +61,7 @@ export const DailyBoard = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-4">
         {weekDays.map((day) => (
           <DateTile
             key={day.toISOString()}
@@ -67,6 +69,7 @@ export const DailyBoard = ({
             deliverables={getDeliverablesForDate(day)}
             onDeliverableUpdated={onDeliverableUpdated}
             onDeliverableClick={onDeliverableClick}
+            onMobileAdd={onMobileAdd}
           />
         ))}
       </div>
